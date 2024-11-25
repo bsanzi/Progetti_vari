@@ -8,9 +8,9 @@
 
 
 
-const int RED = 15;
-const int YELLOW = 2;
-const int GREEN = 4;
+const int RED = 4;
+const int YELLOW = 16;
+const int GREEN = 17;
  
 
 const int FAULT_ZONE = -65;
@@ -29,7 +29,7 @@ pinMode(YELLOW, OUTPUT);
 pinMode(GREEN, OUTPUT);
 BLEDevice::init("");
 Serial.begin(115200);
-Serial.begin("go");
+Serial.println("go");
  
 
 }
