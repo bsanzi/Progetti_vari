@@ -29,6 +29,7 @@ pinMode(YELLOW, OUTPUT);
 pinMode(GREEN, OUTPUT);
 BLEDevice::init("");
 Serial.begin(115200);
+Serial.begin("go");
  
 
 }
