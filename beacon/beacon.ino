@@ -28,7 +28,7 @@ pinMode(RED, OUTPUT);
 pinMode(YELLOW, OUTPUT);
 pinMode(GREEN, OUTPUT);
 BLEDevice::init("");
-Serial.begin(115200);
+Serial.begin(baud_rate);
 Serial.println("go");
  
 
@@ -38,6 +38,9 @@ Serial.println("go");
 void loop(){
 BLEScan* scan = BLEDevice::getScan();
 scan-> setActiveScan(true);
+    pBLEScan->setActiveScan(true); // Modalità attiva: richiede più dati dai beacon
+    pBLEScan->setInterval(100);    // Intervallo tra scansioni (ms)
+    pBLEScan->setWindow(100);       // Finestra di scansione (ms)
 BLEScanResults* results= scan->start(1);
 int RSSI=DEFAULT_RSSI;
 String name;

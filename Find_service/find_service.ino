@@ -1,59 +1,76 @@
-// per conoscere tutti i servizi e caratteristiche di un beacon
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEClient.h>
 
-#include <BLEDevice.h>            // sets up BLE device constructs<font></font>
-#include <BLEUtils.h>             // various BLE utilities for processing BLE data<font></font>
-#include <BLEScan.h>              // contains BLE scanning functions<font></font>
-#include <BLEAdvertisedDevice.h>  // contains BLE device characteristic data<font></font>
-//#include <config.h> // setup del sistema
-
-const int REDD = 4; //PIN DGIO4
-const int YELLOWW = 16; //PIN DGIO16
-const int GREENN = 17;  //PIN DGIO17
-
-const int FAULT_ZONEE = -65; //dbm
-const int WARNING_ZONEE = -72;
-const int DEFAULT_ZONEE = -150;
-
-String my_beacon_address = "e5:31:d2:ed:02:8b";
-
-BLEScan* pBLEScan;
-BLEScanResults* pBLEresults;
-BLEDevice* pDevice;
-BLEAdvertisedDevice device;
-BLEService* pService;
-BLECharacteristic* pCharacteristic;
+BLEClient* pClient;
+BLERemoteService* pService;
 
 void setup() {
-  // ... inizializzazione ...
- BLEDevice :: init();
- Serial.begin(115200);
+    Serial.begin(115200);
 
+    // Inizializza il BLE
+    BLEDevice::init("");
+
+    // Scansiona i dispositivi per trovare il beacon
+    BLEScan* pBLEScan = BLEDevice::getScan();
+    pBLEScan->setActiveScan(true);
+    BLEScanResults *scanResults = pBLEScan->start(5); // Scansiona per 5 secondi
+
+    // Cerca il dispositivo desiderato
+    BLEAdvertisedDevice* targetDevice = nullptr;
+    for (int i = 0; i < scanResults->getCount(); i++) {
+        BLEAdvertisedDevice device = scanResults->getDevice(i);
+        Serial.printf("Dispositivo trovato: %s\n", device.toString().c_str());
+
+        // Confronta con l'indirizzo MAC o un identificatore specifico
+        if (device.getAddress().toString() == "e5:31:d2:ed:02:8b") {
+            targetDevice = new BLEAdvertisedDevice(device);
+            break;
+        }
+    }
+
+    if (!targetDevice) {
+        Serial.println("Beacon non trovato.");
+        return;
+    }
+
+    // Connetti al dispositivo
+    pClient = BLEDevice::createClient();
+    if (pClient->connect(targetDevice)) {
+        Serial.println("Connesso al beacon!");
+
+        // Scopri i servizi
+        std::map<std::string, BLERemoteService*>* services = pClient->getServices();
+        for (auto const& entry : *services) {
+            Serial.printf("Servizio trovato: %s\n", entry.first.c_str());
+        }
+
+        // Accedi a un servizio specifico (sostituisci con il UUID corretto)
+        pService = pClient->getService("UUID_SERVIZIO");
+        if (pService) {
+            Serial.println("Servizio trovato!");
+
+            // Scopri le caratteristiche del servizio
+            std::map<std::string, BLERemoteCharacteristic*>* characteristics = pService->getCharacteristics();
+            for (auto const& entry : *characteristics) {
+                Serial.printf("Caratteristica trovata: %s\n", entry.first.c_str());
+
+                // Puoi leggere o scrivere sulla caratteristica
+                BLERemoteCharacteristic* pCharacteristic = entry.second;
+                if (pCharacteristic->canRead()) {
+                String valueStr = pCharacteristic->readValue();
+                std::string value = valueStr.c_str(); // Conversione a std::string
+                Serial.println(value.c_str());       // Stampa il valore
+                }
+            }
+        } else {
+            Serial.println("Servizio non trovato.");
+        }
+    } else {
+        Serial.println("Impossibile connettersi al beacon.");
+    }
 }
 
 void loop() {
-  // Inizia la scansione
-  pBLEScan = BLEDevice::getScan();
-  pBLEscan-> setActiveScan(true);
-  pBLEresults = pBLEScan->start(1); // Avvia la scansione per 0 secondi (continua finché non viene fermata)
-
-  // ... codice per trovare e connettersi al dispositivo desiderato ...
- for (i=0; i<pBLEresults->getCount();i++){
-  BLEAdvertisedDevice device=results->getDevice(i);
-  address= device.getAddress().toString();
-  if (address == my_beacon_address ) {
-      // Ottieni il primo servizio del dispositivo
-  pService = pDevice->services()[0];
-  std::string value = pservice->value();
-  Serial.print("Service: ");
-  Serial.println(value);
-
-    // Ottieni la prima caratteristica del servizio
-  pCharacteristic = pService->characteristics()[0];
-  std::string value = pCharacteristic->value();
-  Serial.print("Characteristic: ");
-  Serial.println(value);
- }
- else{
-  Serial.println("beacon non trovato");
- }
+    // Nulla qui
 }
