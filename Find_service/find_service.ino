@@ -2,41 +2,59 @@
 #include <BLEUtils.h>
 #include <BLEClient.h>
 
+int baud_rate = 115200;
+
+BLEAdvertisedDevice* device;
+BLEScan* scan;
+BLEScanResults* results;
 BLEClient* pClient;
 BLERemoteService* pService;
+BLERemoteCharacteristic* pCharacteristic;
+
+String address_beacon = "e5:31:d2:ed:02:8b";
+String UUID_SERVIZIO_1 =   "00001800-0000-1000-8000-00805f9b34fb"; //Generic Access Service
+String Characteristic_name_11 ="00002a00-0000-1000-8000-00805f9b34fb"; //name
+String UUID_SERVIZIO_2 ="00001801-0000-1000-8000-00805f9b34fb";  // Special Interest Group
+String UUID_SERVIZIO_3 ="6e400001-b5a3-f393-e0a9-e50e24dcca9e"; // Customer service
+String Characteristic_31 ="6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+String Characteristic_32 ="6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(baud_rate);
 
     // Inizializza il BLE
     BLEDevice::init("");
 
     // Scansiona i dispositivi per trovare il beacon
-    BLEScan* pBLEScan = BLEDevice::getScan();
-    pBLEScan->setActiveScan(true);
-    BLEScanResults *scanResults = pBLEScan->start(5); // Scansiona per 5 secondi
+    scan = BLEDevice::getScan();
+    scan->setActiveScan(true);
+    results = scan->start(1); // Scansiona per 5 secondi
 
     // Cerca il dispositivo desiderato
-    BLEAdvertisedDevice* targetDevice = nullptr;
-    for (int i = 0; i < scanResults->getCount(); i++) {
-        BLEAdvertisedDevice device = scanResults->getDevice(i);
-        Serial.printf("Dispositivo trovato: %s\n", device.toString().c_str());
+    device = nullptr;
+    for (int i = 0; i < results->getCount(); i++) {
+        BLEAdvertisedDevice newdevice = results->getDevice(i);
+        String name = newdevice.toString();
+        Serial.print("Dispositivo trovato: ");
+        Serial.println(name);
 
         // Confronta con l'indirizzo MAC o un identificatore specifico
-        if (device.getAddress().toString() == "e5:31:d2:ed:02:8b") {
-            targetDevice = new BLEAdvertisedDevice(device);
+        if (newdevice.getAddress().toString() == address_beacon) {
+            device = new BLEAdvertisedDevice(newdevice);
+            //String battery_level = device->getServiceData();
+            //Serial.println(battery_level);
             break;
         }
     }
 
-    if (!targetDevice) {
+    if (!device) {
         Serial.println("Beacon non trovato.");
         return;
     }
 
     // Connetti al dispositivo
     pClient = BLEDevice::createClient();
-    if (pClient->connect(targetDevice)) {
+    if (pClient->connect(device)) {
         Serial.println("Connesso al beacon!");
 
         // Scopri i servizi
@@ -46,9 +64,9 @@ void setup() {
         }
 
         // Accedi a un servizio specifico (sostituisci con il UUID corretto)
-        pService = pClient->getService("UUID_SERVIZIO");
+        pService = pClient->getService("00002a04-0000-1000-8000-00805f9b34fb");
         if (pService) {
-            Serial.println("Servizio trovato!");
+            Serial.println("Servizio UUID_SERVIZIO_1 trovato!");
 
             // Scopri le caratteristiche del servizio
             std::map<std::string, BLERemoteCharacteristic*>* characteristics = pService->getCharacteristics();
@@ -56,12 +74,13 @@ void setup() {
                 Serial.printf("Caratteristica trovata: %s\n", entry.first.c_str());
 
                 // Puoi leggere o scrivere sulla caratteristica
-                BLERemoteCharacteristic* pCharacteristic = entry.second;
-                if (pCharacteristic->canRead()) {
+                pCharacteristic = pService->getCharacteristic("00002a00-0000-1000-8000-00805f9b34fb");
+                //if (pCharacteristic->canRead()) {
                 String valueStr = pCharacteristic->readValue();
                 std::string value = valueStr.c_str(); // Conversione a std::string
+                Serial.println("Characteristic_11 è: ");
                 Serial.println(value.c_str());       // Stampa il valore
-                }
+                //}
             }
         } else {
             Serial.println("Servizio non trovato.");
