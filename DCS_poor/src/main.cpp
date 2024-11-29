@@ -26,8 +26,10 @@ void loop() {
 
   int analogLux=analogRead(sLux);
   int Lux = map(analogLux, 0, 1023, 0, 100);
-  Serial.print("Lux analogico: ");
+  Serial.print("Lux: ");
   Serial.println(Lux);
+   Serial.print("Lux analogico: ");
+  Serial.println(analogLux);
 
   delay(2000);
 }
