@@ -1,12 +1,12 @@
-#include <config.h>
-Adafruit_BME280 sBarometer;
+
+#include <main.h>
 
 void setup(){
  Serial.begin(baud_rate);
  boolean init=sBarometer.begin(0X76);
 
  if (!init){
-  Serial.println("sensore non inizializzato");
+  Serial.println("sensore BME280 non inizializzato");
  }
 
 }
@@ -26,10 +26,16 @@ void loop() {
 
   int analogLux=analogRead(sLux);
   int Lux = map(analogLux, 0, 1023, 0, 100);
+
+  if (MODE == wifi){
+  Serial.println("MODE_wifi");
   Serial.print("Lux: ");
   Serial.println(Lux);
-   Serial.print("Lux analogico: ");
+  Serial.print("Lux analogico: ");
   Serial.println(analogLux);
-
+  }
+else {
+  Serial.println("definire MODE");
+}
   delay(2000);
 }
