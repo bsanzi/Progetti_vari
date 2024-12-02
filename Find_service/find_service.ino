@@ -4,6 +4,7 @@
 
 BLEClient* pClient;
 BLERemoteService* pService;
+String address_beacon = "e5:31:d2:ed:02:8b";
 
 void setup() {
     Serial.begin(115200);
@@ -12,18 +13,18 @@ void setup() {
     BLEDevice::init("");
 
     // Scansiona i dispositivi per trovare il beacon
-    BLEScan* pBLEScan = BLEDevice::getScan();
-    pBLEScan->setActiveScan(true);
-    BLEScanResults *scanResults = pBLEScan->start(5); // Scansiona per 5 secondi
+    BLEScan* scan = BLEDevice::getScan();
+    scan->setActiveScan(true);
+    BLEScanResults *results = scan->start(1); // Scansiona per 5 secondi
 
     // Cerca il dispositivo desiderato
     BLEAdvertisedDevice* targetDevice = nullptr;
-    for (int i = 0; i < scanResults->getCount(); i++) {
-        BLEAdvertisedDevice device = scanResults->getDevice(i);
+    for (int i = 0; i < results->getCount(); i++) {
+        BLEAdvertisedDevice device = results->getDevice(i);
         Serial.printf("Dispositivo trovato: %s\n", device.toString().c_str());
 
         // Confronta con l'indirizzo MAC o un identificatore specifico
-        if (device.getAddress().toString() == "e5:31:d2:ed:02:8b") {
+        if (device.getAddress().toString() == address_beacon) {
             targetDevice = new BLEAdvertisedDevice(device);
             break;
         }
@@ -52,6 +53,7 @@ void setup() {
 
             // Scopri le caratteristiche del servizio
             std::map<std::string, BLERemoteCharacteristic*>* characteristics = pService->getCharacteristics();
+            //BLERemoteCharacteristic* characteristics = pService->getCharacteristics();
             for (auto const& entry : *characteristics) {
                 Serial.printf("Caratteristica trovata: %s\n", entry.first.c_str());
 
