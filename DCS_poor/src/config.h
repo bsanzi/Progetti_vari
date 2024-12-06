@@ -5,6 +5,7 @@
 
 int baud_rate=9600;
 const int sLux= A0; //PIN A0 AnalogInput
+const int GREEN=A0; // Digital PIN
 
 // Type of MODE
 #define wifi 0
