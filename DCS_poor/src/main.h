@@ -1,5 +1,7 @@
 #include<config.h>
 
-#define MODE wifi
+#ifndef MODE
+#define MODE 0xFF
+#endif
 
-Adafruit_BME280 sBarometer;
+Adafruit_BME280 sBarometer; // il sensore barometrico richiede init

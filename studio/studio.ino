@@ -1,36 +1,29 @@
+#include <CapacitiveSensor.h>
 
-int GREEN = A0;
+CapacitiveSensor touch = CapacitiveSensor(10,11);
 
-void setup() {
+// AnalogOUTPUT
+#define GREEN A0 
+unsigned long push_buttom;
+unsigned long prev_push;
+
+void setup(){
   Serial.begin(9600);
-  pinMode(GREEN, OUTPUT);
+  pinMode(GREEN,OUTPUT);
+
 }
-
 void loop(){
-
-  if (Serial.available()){
-    //delay (1000);
-    char comand_1 = Serial.read();
-    delay(100);
-
-    if (comand_1!='>'){
-      Serial.println("il comando ha format >X ");
+  long value=touch.capacitiveSensor(100);
+  Serial.println(value);
+    if (value>150){
+     prev_push = push_buttom;
+     digitalWrite(GREEN, HIGH);
+     push_buttom = millis();
     }
-    else {
-        char comand_2 = Serial.read();
-        switch (comand_2) {
-          case 'G':{
-          digitalWrite(GREEN, HIGH);
-          Serial.println ("Led green acceso");
-          break;
-           }
-          case 'g': {
-          digitalWrite(GREEN, LOW);
-          Serial.println ("Led green spento");
-          break;
-          }
-        }
-    }
-  }
-
+      else{
+      digitalWrite(GREEN, LOW);
+      }
+unsigned long interv = push_buttom-prev_push;
+Serial.println(interv);
+  delay(100);
 }

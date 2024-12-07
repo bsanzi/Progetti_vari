@@ -3,26 +3,42 @@
 
 void setup(){
  Serial.begin(baud_rate);
+
  pinMode(GREEN,OUTPUT);
-  boolean init=sBarometer.begin(0X76);
+
+ bool init=sBarometer.begin(0X76);
   if (!init){
     Serial.println("sensore BME280 non inizializzato");
   }
 
 }
-
+float i=0; // per asse X del teleplot
 void loop() {
+ i +=0.1;
+
+  // Plot a Temp
+            double Temp = sBarometer.readTemperature();
+            Serial.print(">temp:"); //  >var:123 cosi lo plotta
+            Serial.println(Temp); 
+
   if (Serial.available()){
     char comand_1= Serial.read();
-    delay(100);
+    delay(serial_delay);
     if (comand_1 == '>'){
     char comand_2 = Serial.read();
-    delay(100);
+    //delay(100);
     switch(comand_2){
       case 'T':{
           Serial.print("Temperatura: ");
-          Serial.print(sBarometer.readTemperature());
+          double Temp = sBarometer.readTemperature();
+          Serial.print(Temp);
           Serial.println(" *C");
+        if (Temp>temp_limit){
+          digitalWrite(GREEN,HIGH);
+        }
+        else {
+          digitalWrite(GREEN,LOW);
+        }
           break;
       }
       case 'U': {
@@ -53,7 +69,10 @@ void loop() {
           break;
       }
      }
+    }
   }
-  delay(2000);
-}
+  /*else{
+    Serial.println("serial port wait comand >X");
+    delay(5000);
+  } */
 }
