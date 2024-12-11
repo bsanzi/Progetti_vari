@@ -1,29 +1,25 @@
-#include <CapacitiveSensor.h>
 
-CapacitiveSensor touch = CapacitiveSensor(10,11);
-
-// AnalogOUTPUT
-#define GREEN A0 
-unsigned long push_buttom;
-unsigned long prev_push;
+#include <Servo.h>
+Servo myServo;
+int posizione[4] = {30,60,90,120} ;
 
 void setup(){
   Serial.begin(9600);
-  pinMode(GREEN,OUTPUT);
+myServo.attach(8);
 
 }
+
 void loop(){
-  long value=touch.capacitiveSensor(100);
-  Serial.println(value);
-    if (value>150){
-     prev_push = push_buttom;
-     digitalWrite(GREEN, HIGH);
-     push_buttom = millis();
+   myServo.write(0);
+    for (int i=0; i<181; i++){
+     myServo.write(i);
+      Serial.println(i);
+     delay(50);
     }
-      else{
-      digitalWrite(GREEN, LOW);
-      }
-unsigned long interv = push_buttom-prev_push;
-Serial.println(interv);
-  delay(100);
+    for (int i=180; i>0; i--){
+      myServo.write(i);
+      delay(100);
+    }
+
 }
+

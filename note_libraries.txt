@@ -1,0 +1,11 @@
+<Servo.h>
+object.attach(PIN)
+object.write(angle -180)
+
+<Capacitive.Sensor>
+
+// PIN Analog
+AnalogInput da 0 a 1023 es. val
+AnalogOutput da 0 a 255 es. pwm
+function map: int pwm = map(val, 0,1023,0,255);
+
