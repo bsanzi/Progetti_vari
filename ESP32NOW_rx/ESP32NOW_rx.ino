@@ -1,6 +1,9 @@
-  #include <esp_now.h>
+#include <esp_now.h>
 #include <WiFi.h>
 #include <Arduino.h>
+
+// macAddress rx {0xCC,0x7B,0x5C,0xF1,0xA7,0xEC}
+
 
 // Must match the sender structure
 typedef struct struct_message {
