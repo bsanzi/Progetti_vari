@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"name": "ESPNOW_32_duplex",
+			"path": ".."
+		}
+	],
+	"settings": {}
+}

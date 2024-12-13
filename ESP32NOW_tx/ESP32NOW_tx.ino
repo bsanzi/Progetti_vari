@@ -4,7 +4,7 @@
 
 // REPLACE WITH YOUR RECEIVER MAC Address
 // macAddress tx {0xCC,0x7B,0x5C,0xFB,0xC9,0x88}
-uint8_t broadcastAddress[] = {0xCC,0x7B,0x5C,0xF1,0xA7,0xEC};
+uint8_t RxAddress[] = {0xCC,0x7B,0x5C,0xF1,0xA7,0xEC};
 
 
 // Must match the receiver structure
@@ -20,7 +20,7 @@ struct_message myData;
 
 esp_now_peer_info_t peerInfo;
 
-// callback when data is sent
+// funztion of callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   Serial.print("\r\nLast Packet Send Status:\t");
   Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
@@ -38,6 +38,10 @@ void setup() {
     Serial.println("Error initializing ESP-NOW");
     return;
   }
+  else if (esp_now_init() == ESP_OK){
+    Serial.println("Initializing ESP-NOW done");
+    return;
+  }
 
 
   
@@ -47,7 +51,7 @@ void setup() {
   esp_now_register_send_cb(OnDataSent);
   
   // Register peer
-  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+  memcpy(peerInfo.peer_addr, RxAddress, 6);
   peerInfo.channel = 0;  
   peerInfo.encrypt = false;
   
@@ -60,13 +64,13 @@ void setup() {
  
 void loop() {
   // Set values to send
-  strcpy(myData.a, "THIS IS A CHAR");
+  strcpy(myData.a, "Ready to tx");
   myData.b = random(1,20);
   myData.c = 1.2;
   myData.d = false;
   
   // Send message via ESP-NOW
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+  esp_err_t result = esp_now_send(RxAddress, (uint8_t *) &myData, sizeof(myData));
      
   if (result == ESP_OK) {
     Serial.println("Sent with success");
