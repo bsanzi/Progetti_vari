@@ -1,22 +1,32 @@
-#include <Arduino.h>
-#include <esp_now.h>
-#include <WiFi.h>
+#include <Led.h>
+#include <config.h>
 
 
+// Led(GREEN)= Led ledg;
 
-// put function declarations here:
-int myFunction(int, int);
+int PIN_1 = GREEN;
+int PIN_2 = RED;
+Led Led1(PIN_1);
+Led Led2(PIN_2);
+
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
-}
+  pinMode(GREEN,OUTPUT);
+  pinMode(RED,OUTPUT);
+  Serial.begin(baud_rate);
+  Led1.begin();
+  Led2.begin();
 
+
+}
+ 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  LedState a=Led1.getState();
+  LedState b=Led2.getState();
+  delay(1000);
+  if(a == b){
+    Serial.println("same state");
+    delay(1000);
+  }
+  Led1.msgEval();
 }
