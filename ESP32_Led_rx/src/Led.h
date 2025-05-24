@@ -6,12 +6,12 @@
 
 enum class LedState : char{
   ON = 'O',
-  ON_ing = 'o',
+  ON_ed = 'o',
   OFF = 'F',
-  OFF_ing = 'f',
+  OFF_ed = 'f',
   UNKNOWN = 'U',
   BLINK = 'B',
-  BLINK_ing = 'b'
+  BLINK_ed = 'b'
 };
 
 typedef void (*StateCallback)(LedState state);

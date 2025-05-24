@@ -7,7 +7,3 @@
 #define GREEN 2
 #define RED 3
 #define TIMESETUP 10000
-
-
-
-

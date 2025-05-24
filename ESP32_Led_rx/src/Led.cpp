@@ -22,20 +22,14 @@ void Led::run() {
   switch (_state) {
     case LedState::UNKNOWN:
       break;
-    case LedState::ON_ing:
-      accendi();
-      break;
     case LedState::ON:
-      break;
-    case LedState::OFF_ing:
-      spegni();
+      accendi();
       break;
     case LedState::OFF:
-      break;
-    case LedState::BLINK_ing:
-      accendi();
+      spegni();
       break;
     case LedState::BLINK:
+      blink();
       break;
  /**  case LedState::STOPPED:
       stop();
@@ -62,11 +56,10 @@ void Led::accendi(){
       delay(200);
       digitalWrite(_pin, LOW);
       delay(200);
-      _state = LedState::ON_ing;
+
     }
     _lastRun = t;
-  } else if (_state != LedState::ON_ing) {
-    _lastRun = millis();
+
   }
 }
 void Led::blink(){
@@ -87,11 +80,8 @@ void Led::blink(){
       delay(200);
       digitalWrite(_pin, LOW);
       delay(200);
-      _state = LedState::BLINK_ing;
     }
     _lastRun = t;
-  } else if (_state != LedState::BLINK_ing) {
-    _lastRun = millis();
   }
 }
 

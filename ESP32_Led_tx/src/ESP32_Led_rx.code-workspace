@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../ESP32_Led_rx"
+		},
+		{
+			"name": "ESP32_Led_tx",
+			"path": ".."
+		}
+	],
+	"settings": {}
+}
